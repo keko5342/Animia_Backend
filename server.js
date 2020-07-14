@@ -44,11 +44,13 @@ app.set('io', io)
 
 // 起動確認
 app.get('/wake-up', (req, res) => res.send('👍'))
+app.get('/profilesample', (req, res) => res.send({title: 'profile'}))
+app.get('/timelinesample', (req, res) => res.send({title: 'timeline'}))
 
 // カスタムミドルウェア
 app.use('/', authRouter)
 
 // サーバ起動時の設定
-server.listen(18080, '0.0.0.0', () => {
+server.listen(process.env.PORT || 18080, () => {
   console.log('listening...18080')
 });
