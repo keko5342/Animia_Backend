@@ -20,3 +20,16 @@ exports.TWITTER_CONFIG = {
   consumerSecret: process.env.TWITTER_SECRET,
   callbackURL: twitterURL,
 }
+
+exports.DB_CONFIG = {
+  host: process.env.DB_CONFIG_HOST,
+  user: process.env.DB_CONFIG_USER,
+  password: process.env.DB_CONFIG_PASSWORD,
+  database: process.env.DB_CONFIG_DATABASE,
+}
+
+exports.AUTH0_CONFIG = {
+  clientId: process.env.AUTH0_CLIENT_ID,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+  domain: process.env.AUTH0_DOMAIN,
+}

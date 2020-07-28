@@ -14,9 +14,9 @@ const { SESSION_SECRET, CLIENT_ORIGIN } = require('./config') //各種設定の�
 const app = express()                                         
 
 // .env ? 開発用サーバ→HTTP : HTTPS
-let server
+let server;
 if(process.env.NODE_ENV === 'dev') {
-  server = http.createServer(app)
+  server = http.createServer(app);
 }else{
   // SSH info
   const certOptions = {
@@ -26,29 +26,30 @@ if(process.env.NODE_ENV === 'dev') {
 }
 
 // 各種ミドルウェアの設置
-app.use(express.json())                // JSONサポート
-app.use(cors({origin: CLIENT_ORIGIN})) // WebClientServerからのCORS通信のみ許可
-app.use(passport.initialize())         // APIリクエスト対応
-passportInit()
+app.use(express.json());                          // JSONサポート
+app.use(express.urlencoded({ extended: true }));  // Urlエンコ
+app.use(cors({origin: CLIENT_ORIGIN}));           // WebClientServerからのCORS通信のみ許可
+app.use(passport.initialize());                   // APIリクエスト対応
+passportInit();
 
 // セッション情報の設定
 app.use(session({ 
   secret: process.env.SESSION_SECRET, 
   resave: true, 
   saveUninitialized: true
-}))
+}));
 
 // WebSocketミドルウェアの設置
-const io = socketio(server)
-app.set('io', io)
+const io = socketio(server);
+app.set('io', io);
 
 // 起動確認
-app.get('/wake-up', (req, res) => res.send('👍'))
-app.get('/profilesample', (req, res) => res.send({title: 'profile'}))
-app.get('/timelinesample', (req, res) => res.send({title: 'timeline'}))
+app.get('/wake-up', (req, res) => res.send('👍'));
+app.get('/profilesample', (req, res) => res.send({title: 'profile'}));
+app.get('/timelinesample', (req, res) => res.send({title: 'timeline'}));
 
 // カスタムミドルウェア
-app.use('/', authRouter)
+app.use('/', authRouter);
 
 // サーバ起動時の設定
 server.listen(process.env.PORT || 18080, () => {
