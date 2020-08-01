@@ -45,8 +45,6 @@ app.set('io', io);
 
 // 起動確認
 app.get('/wake-up', (req, res) => res.send('👍'));
-app.get('/profilesample', (req, res) => res.send({title: 'profile'}));
-app.get('/timelinesample', (req, res) => res.send({title: 'timeline'}));
 
 // カスタムミドルウェア
 app.use('/', authRouter);
