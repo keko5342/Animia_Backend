@@ -5,28 +5,16 @@ const fs = require('fs');                                     //標準ファイ�
 const https = require('https');
 const http = require('http');
 const passport = require('passport');                         //API連携（今回はTwitter）
-const session = require('express-session');
 const cors = require('cors');                                 //クロスオリジンアクセス
-const socketio = require('socket.io');                        //WebSocket
 const authRouter = require('./lib/auth.router');              //ルーティング
 const passportInit = require('./lib/passport.init');          //パスポート設定
 const { SESSION_SECRET, CLIENT_ORIGIN } = require('./config');//各種設定の読み出し
 const cookieParser = require('cookie-parser');                 //Cookieを解析
 
-
 const app = express()
 
-// .env ? 開発用サーバ→HTTP : HTTPS
 let server;
-/*
-if(process.env.NODE_ENV === 'dev') {
-  server = http.createServer(app);
-}else{
-*/
-  // SSH info
-http.createServer((express()).all("*", function (request, response) {
-  response.redirect(`https://${request.hostname}${request.url}`);
-})).listen(80);
+// SSH info
 const certOptions = {
   key: fs.readFileSync('./certs/server.key'),
   cert: fs.readFileSync('./certs/0000_cert.pem'),
@@ -42,16 +30,14 @@ app.use(cors({origin: CLIENT_ORIGIN, credentials: true, samesite: 'none', secure
 app.use(passport.initialize());                   // APIリクエスト対応
 passportInit();
 
+/*
 // セッション情報の設定
 app.use(session({ 
   secret: process.env.SESSION_SECRET, 
   resave: true, 
   saveUninitialized: true
 }));
-
-// WebSocketミドルウェアの設置
-const io = socketio(server);
-app.set('io', io);
+*/
 
 // 起動確認
 app.get('/wake-up', (req, res) => res.send('👍'));
@@ -60,10 +46,7 @@ app.get('/wake-up', (req, res) => res.send('👍'));
 app.use('/', authRouter);
 
 // サーバ起動時の設定
-/*
-server.listen(process.env.PORT || 18080, () => {
-  console.log('listening...18080')
-});
-*/
-
+http.createServer((express()).all("*", function (request, response) {
+  response.redirect(`https://${request.hostname}${request.url}`);
+})).listen(80);
 server.listen(443);
