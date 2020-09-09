@@ -12,7 +12,8 @@ const [twitterURL] = callbacks
 // 想定されるクライアントサーバのドメイン
 exports.CLIENT_ORIGIN = process.env.NODE_ENV === 'production'
   ? ['http://172.18.0.2:8080', 'http://172.24.0.2:5000']
-  : ['http://localhost:8080', 'http://localhost:5000']
+  : ['https://dev.da1sjddf4h4dx.amplifyapp.com', 'http://localhost:5000']
+//  : ['https://dev.da1sjddf4h4dx.amplifyapp.com', 'https://dev.da1sjddf4h4dx.amplifyapp.com']
 
 // 認証に必要な情報の読み込み
 exports.TWITTER_CONFIG = {
