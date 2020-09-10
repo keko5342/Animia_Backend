@@ -1,48 +1,51 @@
-# React Social Authentication Server
+# 概要
+本ツール『Animia』は自作ソフトウェア『listManager』を発展させたWebアプリです。
+大学生時代にコミックマーケットのサークルチェックのために、Twitterのリスト機能を利用してイラストレータを管理している友人から 「リスト内のユーザが多くなってしまって困っているので整理したい」という要望を受け、リストを整理するソフトウェアの制作に取り組んだことがきっかけで作ったソフトウェアが元になっています。
 
-![React Social Auth](https://i.imgur.com/acA83LR.gif)
+現在は友人に使ってもらうだけでなく、多くの方々の要望にマッチしたサービスを作るために開発を続けています。
+Twitterを使ってイラストを検索する人，エゴサーチを行う人，新しいクリエイターと出会いたい人の一助となることが目標です。
 
-## Medium posts that detail this repo
-* [Twitter, Google, Facebook, Github version on Codeburst](https://medium.com/p/862d59583105)
-* [Twitter only version on ITNEXT](https://medium.com/p/2f6b7b0ee9d2) (use 'twitter-auth' branch)
+このツールでは以下のことができます。
 
-## Getting Started
+ 1.Twitterへのログイン
+ 2.ユーザが保持しているリストの参照
+ 3.リスト内ユーザが投稿した画像の参照
+ 4.(実装予定)検索ワードによるユーザの検索
+ 5.(実装予定)ユーザをリストに追加／削除
+ 6.(実装予定)お気に入りユーザの設定
+ 7.(実装予定)人気のユーザのレコメンド
 
-```
-git clone https://github.com/funador/react-auth-server.git
-cd react-auth-server
-npm run dev
-```
+現時点では保持しているリスト内ユーザの画像を見ることくらいしかできませんが、今後はもっと機能を拡張していきます。
+※本ツールの使用にはTwitterアカウントが必要です。
 
-#### Because of Facebook, https is required. Even in development. 
-Facebook requires all apps interacting with their api (including those in development) to be served over https.  This means you will need to run create-react-app in https mode. Plus set up certificates for your server. Go ahead and get yourself a cup of coffee. This could take a minute.
+# 技術
+恐らくフロントエンド編に目を通していると思うので、割愛します。  
+（）を参照してください。
 
-To add https to localhost [follow these instructions](https://medium.freecodecamp.org/how-to-get-https-working-on-your-local-development-environment-in-5-minutes-7af615770eec) (OS X).
+## バックエンド
+バックエンドでは、Node.jsを採用しました。フレームワークとしてExpressを採用しています。
 
-You will also need to manually add the https certificate to Chrome as [described here](https://www.comodo.com/support/products/authentication_certs/setup/mac_chrome.php).
+Expressを採用した理由は、メジャーで資料が多く見つかったこと。公式ドキュメントが丁寧であったことが大きいです。  
+また、フロントエンドにJavaScriptを採用しているため、JSON周りの親和性の高さも評価しています。  
+今回のツールの核となるTwitterAPIへのリクエストでは、PHPの方が有効なドキュメントを多く見つけることができるのでPHPとの2択だったのですが、
+中身はHTTP通信なのでフロントエンドとの親和性を重視しました。
 
-I also had to open a seperate tab for https://localhost:8080 and accept the security warning before the client would push requests through.
+バックエンドサーバの機能は以下の通りです。認証サーバとAPIサーバの役割を兼ねています。
+ 1. 許可されたドメインからのリクエストの受信
+ 2. リクエストに添付されたJWTトークンの検証
+ 3. TwitterAPIへのリクエスト
+ 4. リクエスト結果を送信元ドメインにデータとして送信
 
-If you only want to use Twitter authentication (https is not required), follow the instructions in [this branch](https://github.com/funador/react-auth-client/tree/twitter-auth)
+Node.js以前にWebサーバを公開する経験が数回ほどしかなかったため、CORSやSSL化に手間取ることが多かったように感じます。  
+ブラウザのバージョンアップによって必要な設定項目が増えていたりして苦戦しました。（Chrome）
 
-## Setting up your .env file
-```
-touch .env
-// open .env and add values for: TWITTER_KEY, TWITTER_SECRET, GOOGLE_KEY, 
-// GOOGLE_SECRET, FACEBOOK_KEY, FACEBOOK_SECRET, GITHUB_KEY, GITHUB_SECRET
-// SESSION_SECRET
-// You get the keys and secret from registering at the appropriate 
-// provider (ie. Twitter, Google, Facebook, Github)
-// Make sure you have added 'https://localhost:8080/_insert_provider_here/callback'
-// in your callback settings for each provider
-npm run dev
-```
+ファイル構成に複雑な点はありません。server.jsが参照するファイル群がlibディレクトリに入っています。  
+ファイル名にauth〇〇と付くものが認証に使うコード、fetch〇〇と付くものがAPI機能に使うものです。
 
-#### Deploy
-Everything is set up to deploy to Heroku, you just need to plug in the environment variables for the providers.
+バックエンドの開発では核となるTwitterAPIの振る舞いへの慣れがあったので、実装面では苦労はあまりありませんでした。  
+一番苦労したのはSSL化でした。フロントエンドと比べれば苦労は少ない方です。
 
-### Client
-Please follow the instructions [for setting up the client repo](https://github.com/funador/react-auth-client).
+データベースにはMySQLを採用しています。  
+現在はログインしたユーザのプロフィール情報しか保存していませんが、TwitterAPiにはリクエスト数の制限があるためリクエスト数を如何に減らすかという点がキモになってきます。  
+リクエスト数が超過しやすい部分、多くなりやすい部分は限られているので、正しく問題点を見極め効率化に励みます。
 
-### Issues
-Something not working?  Please [open an issue](https://github.com/funador/react-auth-server/issues) or submit a PR.
